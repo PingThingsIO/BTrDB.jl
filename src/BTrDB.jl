@@ -49,16 +49,15 @@ end
 function values(stream::Stream, start::Int64, stop::Int64)
     url = join([BASEURL, "rawvalues"], "/")
     payload = Dict(
-        "uuid" => decodeUUID(stream["uuid"]),
+        "uuid" => encodeUUID(stream.uuid),
         "start" => string(start),
         "end" => string(stop),
         "versionMajor" => "0"
     )
-
     response = apicall(url, JSON.json(payload))
+    points = RawPoint.(parse_api_results(response, "values"))
 
-    vals = parse_api_results(response, "values")
-
+    return points
 end
 
 

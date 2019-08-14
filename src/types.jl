@@ -28,6 +28,9 @@ function Stream(data::Dict{String,Any})
     )
 end
 
+function RawPoint(data::Dict{String,Any})
+    return RawPoint(parse(Int64, data["time"]), data["value"])
+end
 
 
 ###############################################################################
