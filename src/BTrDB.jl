@@ -6,7 +6,7 @@ using HTTP, JSON
 export
     RawPoint, Stream,
     collections, streams,
-    refresh, create, obliterate,  # stream management functions
+    refresh, create, obliterate, settags, setannotations, # stream management functions
     nearest, earliest, latest, values, windows, aligned_windows, # data retrieval functions
     insert, delete, flush  # data management functions
 
@@ -165,6 +165,40 @@ function flush(uuid::String)
 end
 
 flush(stream::Stream) = flush(stream.uuid)
+
+
+function settags(stream::Stream, tags::Dict{String, String})
+    url = join([BASEURL, "setstreamtags"], "/")
+    payload = Dict(
+        "uuid" => encodeUUID(stream.uuid),
+        "expectedPropertyVersion" => stream.propertyVersion,
+        "tags" => dict2array(tags),
+        "collection" => stream.collection
+    )
+
+    response = apicall(url, JSON.json(payload))
+    result = JSON.parse(response)
+    checkstat(result)
+
+    return refresh(stream)
+end
+
+function setannotations(stream::Stream, annotations::Dict{String, Any})
+    url = join([BASEURL, "setstreamannotations"], "/")
+    payload = Dict(
+        "uuid" => encodeUUID(stream.uuid),
+        "expectedPropertyVersion" => stream.propertyVersion,
+        "changes" => dict2array(annotations),
+    )
+
+    response = apicall(url, JSON.json(payload))
+    result = JSON.parse(response)
+    checkstat(result)
+
+    return refresh(stream)
+end
+
+
 
 
 ###############################################################################

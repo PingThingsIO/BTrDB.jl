@@ -98,7 +98,7 @@ end
 function checkstat(data::Dict)
     if data["stat"] != nothing
         if haskey(data["stat"], "code")
-            throw(BTrDBException(data["stat"]["message"]))
+            throw(BTrDBException(data["stat"]["msg"]))
         end
         throw(BTrDBException("unknown error occurred"))
     end
