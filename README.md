@@ -4,11 +4,17 @@ Julia bindings to communicate with the BTrDB database.
 
 ## Installation
 
-TBD
+At the moment, you will need to install directly from our [GitHub repo](https://github.com/PingThingsIO/BTrDB.jl).
+
+```julia
+julia> Pkg.clone("git@github.com:PingThingsIO/BTrDB.jl.git")
+INFO: Cloning Package from git://github.com/PingThingsIO/BTrDB.jl.git
+Cloning into 'BTrDB.jl'...
+```
 
 ## Usage
 
-TBD
+Please see our official [documentation](https://pingthingsio.github.io/BTrDB.jl/latest/).
 
 ## TODO
 
