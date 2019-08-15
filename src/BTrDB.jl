@@ -56,6 +56,7 @@ function collections()
     return collections("")
 end
 
+
 function collections(starts_with::String)
     label = "collections"
     url = join([BASEURL, "listcollections"], "/")
@@ -67,6 +68,7 @@ function collections(starts_with::String)
     response = apicall(url, JSON.json(payload))
     return parse_api_results(response, label)
 end
+
 
 function streams(collection::String)
 
@@ -104,6 +106,7 @@ function create(uuid::String, collection::String, tags::Dict{String, String}, an
     return refresh(uuid)
 end
 
+
 function refresh(uuid::String)
     url = join([BASEURL, "streaminfo"], "/")
     payload = Dict(
@@ -130,6 +133,7 @@ end
 refresh(stream::Stream) = refresh(stream.uuid)
 stream_from_uuid(uuid::String) = refresh(uuid)
 
+
 function obliterate(uuid::String)
     url = join([BASEURL, "obliterate"], "/")
     payload = Dict(
@@ -147,6 +151,7 @@ function obliterate(uuid::String)
 end
 
 obliterate(stream::Stream) = obliterate(stream.uuid)
+
 
 function flush(uuid::String)
     url = join([BASEURL, "flush"], "/")
@@ -183,6 +188,7 @@ function settags(stream::Stream, tags::Dict{String, String})
     return refresh(stream)
 end
 
+
 function setannotations(stream::Stream, annotations::Dict{String, Any})
     url = join([BASEURL, "setstreamannotations"], "/")
     payload = Dict(
@@ -197,8 +203,6 @@ function setannotations(stream::Stream, annotations::Dict{String, Any})
 
     return refresh(stream)
 end
-
-
 
 
 ###############################################################################
@@ -225,6 +229,7 @@ end
 earliest(stream::Stream, version::Int=0) = nearest(stream, MINIMUM_TIME, version, false)
 latest(stream::Stream, version::Int=0) = nearest(stream, MAXIMUM_TIME, version, true)
 
+
 function values(stream::Stream, start::Int64, stop::Int64, version::Int=0)
     url = join([BASEURL, "rawvalues"], "/")
     payload = Dict(
@@ -238,6 +243,7 @@ function values(stream::Stream, start::Int64, stop::Int64, version::Int=0)
 
     return points
 end
+
 
 function windows(stream::Stream, start::Int64, stop::Int64, width::Int, depth::Int, version::Int=0)
     url = join([BASEURL, "windows"], "/")
@@ -254,6 +260,7 @@ function windows(stream::Stream, start::Int64, stop::Int64, width::Int, depth::I
 
     return points
 end
+
 
 function aligned_windows(stream::Stream, start::Int64, stop::Int64, pointwidth::Int, version::Int=0)
     url = join([BASEURL, "alignedwindows"], "/")

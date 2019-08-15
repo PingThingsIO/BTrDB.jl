@@ -8,6 +8,7 @@ struct RawPoint
     value::Float64
 end
 
+
 # An aggregated data point representing a summary or rollup of one or more
 # points of data within a single time series.
 #
@@ -23,6 +24,7 @@ struct StatPoint
     stddev::Float64
 end
 
+
 mutable struct Stream
     uuid::String
     name::String
@@ -32,6 +34,7 @@ mutable struct Stream
     version::Int64
     propertyVersion::Int64
 end
+
 
 ###############################################################################
 # Constructors
@@ -50,9 +53,11 @@ function Stream(data::Dict{String,Any})
     )
 end
 
+
 function RawPoint(data::Dict{String,Any})
     return RawPoint(parse(Int64, data["time"]), data["value"])
 end
+
 
 function StatPoint(data::Dict{String,Any})
     if typeof(data["stddev"]) == String
@@ -83,6 +88,7 @@ function dict2array(tags::Dict)
     return data
 end
 
+
 function decodeTags(data)
     tags = Dict{String, String}()
     for item in data
@@ -91,6 +97,7 @@ function decodeTags(data)
     return tags
 end
 
+
 function decodeAnnotations(data)
     annotations = Dict{String, Any}()
     for item in data
@@ -98,4 +105,3 @@ function decodeAnnotations(data)
     end
     return annotations
 end
-
