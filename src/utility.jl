@@ -2,6 +2,18 @@
 using HTTP, JSON, Base64
 
 
+###############################################################################
+# Module Variables & Constants
+###############################################################################
+
+MINIMUM_TIME = -(16 << 56)
+MAXIMUM_TIME = (48 << 56) - 1
+
+
+###############################################################################
+# UUID Encode/Decode
+###############################################################################
+
 function encodeUUID(txt::String)
     parsed = join(split(txt, "-"))
     parts = [parsed[i:i+1] for i in 1:2:32]
@@ -27,6 +39,10 @@ function decodeUUID(txt::String)
     return "$(parts[1:8])-$(parts[9:12])-$(parts[13:16])-$(parts[17:20])-$(parts[21:end])"
 end
 
+
+###############################################################################
+# APIFrontEnd Related
+###############################################################################
 
 function stitch(parts::Array{String,1}, label::String)
     pattern = Regex("{\"result\": ")

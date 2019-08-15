@@ -3,15 +3,54 @@ module BTrDB
 
 using HTTP, JSON
 
-export collections, streams, values
+export
+    RawPoint, Stream,
+    collections, streams,
+    refresh, create, obliterate  # stream management functions
+    values, nearest, earliest, latest,  # data retrieval functions
+    flush,  # data management functions
+
+###############################################################################
+# Includes
+###############################################################################
 
 include("exceptions.jl")
 include("types.jl")
 include("utility.jl")
 
+###############################################################################
+# Module Variables & Constants
+###############################################################################
+
 APIKEY = ENV["BTRDB_API_KEY"]
 ENDPOINTS = ENV["BTRDB_ENDPOINTS"]
 BASEURL = "https://" * join([string.(split(ENDPOINTS, ":")[1]), "v5"], "/")
+
+
+###############################################################################
+# Status Related
+###############################################################################
+
+# intentionally not exported
+function info()
+    url = join([BASEURL, "info"], "/")
+    response = apicall(url, "{}")
+    data = JSON.parse(response)
+
+    if data["stat"] != nothing
+        if haskey(data["stat"], "code")
+            throw(BTrDBException(data["stat"]["message"]))
+        end
+        throw(BTrDBException("unknown error occurred"))
+    end
+
+    return data
+end
+
+
+###############################################################################
+# Query for Stream or Collections
+###############################################################################
 
 function collections()
     return collections("")
@@ -46,19 +85,130 @@ function streams(collection::String)
     return [Stream(s) for s in parse_api_results(response, label)]
 end
 
-function values(stream::Stream, start::Int64, stop::Int64)
+
+###############################################################################
+# Stream Management Functions
+###############################################################################
+
+function create(uuid::String, collection::String, tags::Dict{String, String}, annotations::Dict{String, Any})
+
+    url = join([BASEURL, "create"], "/")
+    payload = Dict(
+        "uuid" => encodeUUID(uuid),
+        "collection" => collection,
+        "tags" => dict2array(tags),
+        "annotations" => dict2array(annotations)
+    )
+
+    response = apicall(url, JSON.json(payload))
+    return refresh(uuid)
+end
+
+function refresh(uuid::String)
+    url = join([BASEURL, "streaminfo"], "/")
+    payload = Dict(
+        "uuid" => encodeUUID(uuid),
+        "omitVersion" => false,
+        "omitDescriptor" => false
+    )
+    response = apicall(url, JSON.json(payload))
+    data = JSON.parse(response)
+
+    if data["stat"] != nothing
+        if haskey(data["stat"], "code")
+            throw(BTrDBException(data["stat"]["message"]))
+        end
+        throw(BTrDBException("unknown error occurred"))
+    end
+
+    s = Stream(data["descriptor"])
+    s.version = parse(Int64, data["versionMajor"])
+    s.propertyVersion = parse(Int64, data["descriptor"]["propertyVersion"])
+    return s
+end
+
+refresh(stream::Stream) = refresh(stream.uuid)
+
+
+function obliterate(uuid::String)
+    url = join([BASEURL, "obliterate"], "/")
+    payload = Dict(
+        "uuid" => encodeUUID(uuid)
+    )
+    response = apicall(url, JSON.json(payload))
+    data = JSON.parse(response)
+
+    if data["stat"] != nothing
+        if haskey(data["stat"], "code")
+            throw(BTrDBException(data["stat"]["message"]))
+        end
+        throw(BTrDBException("unknown error occurred"))
+    end
+end
+
+obliterate(stream::Stream) = obliterate(stream.uuid)
+
+function flush(uuid::String)
+    url = join([BASEURL, "flush"], "/")
+    payload = Dict(
+        "uuid" => encodeUUID(uuid)
+    )
+    response = apicall(url, JSON.json(payload))
+    data = JSON.parse(response)
+
+    if data["stat"] != nothing
+        if haskey(data["stat"], "code")
+            throw(BTrDBException(data["stat"]["message"]))
+        end
+        throw(BTrDBException("unknown error occurred"))
+    end
+end
+
+flush(stream::Stream) = flush(stream.uuid)
+
+
+###############################################################################
+# Stream Data Retrieval Functions
+###############################################################################
+
+function values(stream::Stream, start::Int64, stop::Int64, version::Int=0)
     url = join([BASEURL, "rawvalues"], "/")
     payload = Dict(
         "uuid" => encodeUUID(stream.uuid),
         "start" => string(start),
         "end" => string(stop),
-        "versionMajor" => "0"
+        "versionMajor" => string(version)
     )
     response = apicall(url, JSON.json(payload))
     points = RawPoint.(parse_api_results(response, "values"))
 
     return points
 end
+
+function nearest(stream::Stream, time::Int64, version::Int=0, backward::Bool=false)
+    url = join([BASEURL, "nearest"], "/")
+
+    payload = Dict(
+        "uuid" => encodeUUID(stream.uuid),
+        "time" => string(time),
+        "backward" => backward,
+        "versionMajor" => stream.version
+    )
+    response = apicall(url, JSON.json(payload))
+    result = JSON.parse(response)
+
+    points = RawPoint(result["value"])
+    return points
+end
+
+earliest(stream::Stream, version::Int=0) = nearest(stream, MINIMUM_TIME, version, false)
+latest(stream::Stream, version::Int=0) = nearest(stream, MAXIMUM_TIME, version, true)
+
+
+###############################################################################
+# Stream Data Management Functions
+###############################################################################
+
 
 
 end # module
