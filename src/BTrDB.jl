@@ -6,9 +6,9 @@ using HTTP, JSON
 export
     RawPoint, Stream,
     collections, streams,
-    refresh, create, obliterate  # stream management functions
+    refresh, create, obliterate,  # stream management functions
     values, nearest, earliest, latest,  # data retrieval functions
-    flush,  # data management functions
+    insert, flush  # data management functions
 
 ###############################################################################
 # Includes
@@ -209,7 +209,22 @@ latest(stream::Stream, version::Int=0) = nearest(stream, MAXIMUM_TIME, version, 
 # Stream Data Management Functions
 ###############################################################################
 
+function insert(uuid::String, data::Array{Pair{Int64, Float64},1})
+    objs = [Dict("time" => ii[1], "value" => ii[2]) for ii in data]
 
+    url = join([BASEURL, "insert"], "/")
+    payload = Dict(
+        "uuid" => encodeUUID(uuid),
+        "sync" => true,
+        "values" => objs
+    )
+    response = apicall(url, JSON.json(payload))
+    result = JSON.parse(response)
+
+    return result["versionMajor"]
+end
+
+insert(stream::Stream, data::Array{Pair{Int64, Float64},1}) = insert(stream.uuid, data)
 
 end # module
 

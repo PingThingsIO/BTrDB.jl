@@ -1,8 +1,26 @@
 using Base64
 
+
+# A point of data representing a single position within a time series. Each
+# point contains a read-only time and value attribute.
 struct RawPoint
     time::Int64
     value::Float64
+end
+
+# An aggregated data point representing a summary or rollup of one or more
+# points of data within a single time series.
+#
+# This aggregation point provides for the min, mean, max, count, and standard
+# deviation of all data values it spans. It is returned by windowing queries
+# such as windows or aligned_windows.
+struct StatPoint
+    time::Int64
+    min::Float64
+    mean::Float64
+    max::Float64
+    count::Float64
+    stddev::Float64
 end
 
 mutable struct Stream
@@ -38,31 +56,8 @@ end
 
 
 ###############################################################################
-# Object functions
-###############################################################################
-
-# function get(Stream, String)
-
-# end
-
-###############################################################################
 # Module Only Utility Functions
 ###############################################################################
-
-# Example chained usage:
-#   BTrDB.decodeTags(JSON.parse(encodeTags(ss.tags)))
-
-# function tags2array(tags::Dict{String, String})
-#     fields = ["distiller", "ingress", "name", "unit"]
-#     data = []
-#     for f in fields
-#         if haskey(tags, f)
-#             push!(data, Dict{String, Any}("key" => f, "val" => Dict{String, String}("value" => tags[f])))
-#         end
-#     end
-#     return data
-# end
-
 
 function dict2array(tags::Dict)
     data = []
