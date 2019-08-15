@@ -75,6 +75,7 @@ function parse_api_results(content, label)
     end
 end
 
+
 function apicall(url::String, body::String)
     headers = [
         "Content-Type" => "application/json",
@@ -85,13 +86,21 @@ function apicall(url::String, body::String)
     response = HTTP.request("POST", url, headers, body, response_stream=io; verbose=0)
     close(io)
 
-    # TODO: handle stat error here?
-    # if body["stat"] != nothing && haskey(body["stat"], "code")
-    #     throw(BTrDBException(body["stat"]["message"]))
-    #  end
+    # TODO
+    # do not check for stat error here, as it could be invalid
+    # JSON in the body.  We CAN check for HTTP status error
+    # though
 
     return String(read(io))
 end
 
 
+function checkstat(data::Dict)
+    if data["stat"] != nothing
+        if haskey(data["stat"], "code")
+            throw(BTrDBException(data["stat"]["message"]))
+        end
+        throw(BTrDBException("unknown error occurred"))
+    end
+end
 

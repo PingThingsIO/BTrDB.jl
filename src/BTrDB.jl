@@ -8,7 +8,7 @@ export
     collections, streams,
     refresh, create, obliterate,  # stream management functions
     values, nearest, earliest, latest,  # data retrieval functions
-    insert, flush  # data management functions
+    insert, delete, flush  # data management functions
 
 ###############################################################################
 # Includes
@@ -196,6 +196,7 @@ function nearest(stream::Stream, time::Int64, version::Int=0, backward::Bool=fal
     )
     response = apicall(url, JSON.json(payload))
     result = JSON.parse(response)
+    checkstat(result)
 
     points = RawPoint(result["value"])
     return points
@@ -220,11 +221,30 @@ function insert(uuid::String, data::Array{Pair{Int64, Float64},1})
     )
     response = apicall(url, JSON.json(payload))
     result = JSON.parse(response)
+    checkstat(result)
 
     return result["versionMajor"]
 end
 
 insert(stream::Stream, data::Array{Pair{Int64, Float64},1}) = insert(stream.uuid, data)
+
+
+function delete(uuid::String, start::Int64, stop::Int64)
+
+    url = join([BASEURL, "delete"], "/")
+    payload = Dict(
+        "uuid" => encodeUUID(uuid),
+        "start" => string(start),
+        "end" => string(stop)
+    )
+    response = apicall(url, JSON.json(payload))
+    result = JSON.parse(response)
+    checkstat(result)
+
+    return result["versionMajor"]
+end
+
+delete(stream::Stream, start::Int64, stop::Int64) = delete(stream.uuid, start, stop)
 
 end # module
 
