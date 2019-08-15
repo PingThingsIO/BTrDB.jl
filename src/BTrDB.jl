@@ -7,7 +7,7 @@ export
     RawPoint, Stream,
     collections, streams,
     refresh, create, obliterate,  # stream management functions
-    values, nearest, earliest, latest,  # data retrieval functions
+    nearest, earliest, latest, values, windows, aligned_windows, # data retrieval functions
     insert, delete, flush  # data management functions
 
 ###############################################################################
@@ -128,7 +128,7 @@ function refresh(uuid::String)
 end
 
 refresh(stream::Stream) = refresh(stream.uuid)
-
+stream_from_uuid(uuid::String) = refresh(uuid)
 
 function obliterate(uuid::String)
     url = join([BASEURL, "obliterate"], "/")
@@ -171,20 +171,6 @@ flush(stream::Stream) = flush(stream.uuid)
 # Stream Data Retrieval Functions
 ###############################################################################
 
-function values(stream::Stream, start::Int64, stop::Int64, version::Int=0)
-    url = join([BASEURL, "rawvalues"], "/")
-    payload = Dict(
-        "uuid" => encodeUUID(stream.uuid),
-        "start" => string(start),
-        "end" => string(stop),
-        "versionMajor" => string(version)
-    )
-    response = apicall(url, JSON.json(payload))
-    points = RawPoint.(parse_api_results(response, "values"))
-
-    return points
-end
-
 function nearest(stream::Stream, time::Int64, version::Int=0, backward::Bool=false)
     url = join([BASEURL, "nearest"], "/")
 
@@ -204,6 +190,52 @@ end
 
 earliest(stream::Stream, version::Int=0) = nearest(stream, MINIMUM_TIME, version, false)
 latest(stream::Stream, version::Int=0) = nearest(stream, MAXIMUM_TIME, version, true)
+
+function values(stream::Stream, start::Int64, stop::Int64, version::Int=0)
+    url = join([BASEURL, "rawvalues"], "/")
+    payload = Dict(
+        "uuid" => encodeUUID(stream.uuid),
+        "start" => string(start),
+        "end" => string(stop),
+        "versionMajor" => string(version)
+    )
+    response = apicall(url, JSON.json(payload))
+    points = RawPoint.(parse_api_results(response, "values"))
+
+    return points
+end
+
+function windows(stream::Stream, start::Int64, stop::Int64, width::Int, depth::Int, version::Int=0)
+    url = join([BASEURL, "windows"], "/")
+    payload = Dict(
+        "uuid" => encodeUUID(stream.uuid),
+        "start" => string(start),
+        "end" => string(stop),
+        "width" => string(width),
+        "depth" => depth,
+        "versionMajor" => version
+    )
+    response = apicall(url, JSON.json(payload))
+    points = StatPoint.(parse_api_results(response, "values"))
+
+    return points
+end
+
+function aligned_windows(stream::Stream, start::Int64, stop::Int64, pointwidth::Int, version::Int=0)
+    url = join([BASEURL, "alignedwindows"], "/")
+    payload = Dict(
+        "uuid" => encodeUUID(stream.uuid),
+        "start" => string(start),
+        "end" => string(stop),
+        "pointWidth" => string(pointwidth),
+        "versionMajor" => version
+    )
+    response = apicall(url, JSON.json(payload))
+    points = StatPoint.(parse_api_results(response, "values"))
+
+    return points
+
+end
 
 
 ###############################################################################

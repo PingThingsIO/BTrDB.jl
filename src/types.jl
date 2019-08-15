@@ -19,7 +19,7 @@ struct StatPoint
     min::Float64
     mean::Float64
     max::Float64
-    count::Float64
+    count::Int64
     stddev::Float64
 end
 
@@ -52,6 +52,22 @@ end
 
 function RawPoint(data::Dict{String,Any})
     return RawPoint(parse(Int64, data["time"]), data["value"])
+end
+
+function StatPoint(data::Dict{String,Any})
+    if typeof(data["stddev"]) == String
+        stddev = NaN
+    else
+        stddev = data["stddev"]
+    end
+    return StatPoint(
+        parse(Int64, data["time"]),
+        data["min"],
+        data["mean"],
+        data["max"],
+        parse(Int64, data["count"]),
+        stddev
+    )
 end
 
 
