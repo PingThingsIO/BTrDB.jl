@@ -2,11 +2,11 @@
 module BTrDB
 
 using HTTP, JSON
+import Base: values
 
 export
-    RawPoint, Stream,
-    collections, streams,
-    refresh, create, obliterate, settags, setannotations, # stream management functions
+    collections, streams, # metadata queries
+    refresh, stream_from_uuid, create, obliterate, settags, setannotations, # stream management functions
     nearest, earliest, latest, values, windows, aligned_windows, # data retrieval functions
     insert, delete, flush  # data management functions
 
@@ -143,9 +143,10 @@ function refresh(uuid::String)
     data = JSON.parse(response)
 
     if data["stat"] != nothing
-        if haskey(data["stat"], "code")
-            throw(BTrDBException(data["stat"]["message"]))
+        if haskey(data["stat"], "msg")
+            throw(BTrDBException(data["stat"]["msg"]))
         end
+        println(data["stat"])
         throw(BTrDBException("unknown error occurred"))
     end
 
