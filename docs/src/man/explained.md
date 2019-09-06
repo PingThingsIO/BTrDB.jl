@@ -66,17 +66,17 @@ ten levels down cover 4ns each.
 
 | level | node width                       |
 |:------|:---------------------------------|
-| 1     | 2<sup>62</sup> ns  (~146 years)  |
-| 2     | 2<sup>56</sup> ns  (~2.28 years) |
-| 3     | 2<sup>50</sup> ns  (~13.03 days) |
-| 4     | 2<sup>44</sup> ns  (~4.88 hours) |
-| 5     | 2<sup>38</sup> ns  (~4.58 min)   |
-| 6     | 2<sup>32</sup> ns  (~4.29 s)     |
-| 7     | 2<sup>26</sup> ns  (~67.11 ms)   |
-| 8     | 2<sup>20</sup> ns  (~1.05 ms)    |
-| 9     | 2<sup>14</sup> ns  (~16.38 µs)   |
-| 10    | 2<sup>8</sup> ns   (256 ns)      |
-| 11    | 2<sup>2</sup> ns   (4 ns)        |
+| 1     | 2^62 ns  (~146 years)  |
+| 2     | 2^56 ns  (~2.28 years) |
+| 3     | 2^50 ns  (~13.03 days) |
+| 4     | 2^44 ns  (~4.88 hours) |
+| 5     | 2^38 ns  (~4.58 min)   |
+| 6     | 2^32 ns  (~4.29 s)     |
+| 7     | 2^26 ns  (~67.11 ms)   |
+| 8     | 2^20 ns  (~1.05 ms)    |
+| 9     | 2^14 ns  (~16.38 µs)   |
+| 10    | 2^8 ns   (256 ns)      |
+| 11    | 2^2 ns   (4 ns)        |
 
 A node starts as a __vector node__, storing raw points in a vector of size 1024.
 This is considered a leaf node, since it does not point to any child nodes.
@@ -114,19 +114,19 @@ new node holding extra details.  When a vector node is first converted to a core
 node, the raw points are pushed into new vector nodes pointed to by the new
 statistical points.
 
-| level | node width                       | stat point width                 | total nodes          | total stat points     |
-|-------|----------------------------------|----------------------------------|----------------------|-----------------------|
-| 1     | 2<sup>62</sup> ns  (~146 years)  | 2<sup>56</sup> ns  (~2.28 years) | 2<sup>0</sup> nodes  | 2<sup>6</sup> points  |
-| 2     | 2<sup>56</sup> ns  (~2.28 years) | 2<sup>50</sup> ns  (~13.03 days) | 2<sup>6</sup> nodes  | 2<sup>12</sup> points |
-| 3     | 2<sup>50</sup> ns  (~13.03 days) | 2<sup>44</sup> ns  (~4.88 hours) | 2<sup>12</sup> nodes | 2<sup>18</sup> points |
-| 4     | 2<sup>44</sup> ns  (~4.88 hours) | 2<sup>38</sup> ns  (~4.58 min)   | 2<sup>18</sup> nodes | 2<sup>24</sup> points |
-| 5     | 2<sup>38</sup> ns  (~4.58 min)   | 2<sup>32</sup> ns  (~4.29 s)     | 2<sup>24</sup> nodes | 2<sup>30</sup> points |
-| 6     | 2<sup>32</sup> ns  (~4.29 s)     | 2<sup>26</sup> ns  (~67.11 ms)   | 2<sup>30</sup> nodes | 2<sup>36</sup> points |
-| 7     | 2<sup>26</sup> ns  (~67.11 ms)   | 2<sup>20</sup> ns  (~1.05 ms)    | 2<sup>36</sup> nodes | 2<sup>42</sup> points |
-| 8     | 2<sup>20</sup> ns  (~1.05 ms)    | 2<sup>14</sup> ns  (~16.38 µs)   | 2<sup>42</sup> nodes | 2<sup>48</sup> points |
-| 9     | 2<sup>14</sup> ns  (~16.38 µs)   | 2<sup>8</sup> ns   (256 ns)      | 2<sup>48</sup> nodes | 2<sup>54</sup> points |
-| 10    | 2<sup>8</sup> ns   (256 ns)      | 2<sup>2</sup> ns   (4 ns)        | 2<sup>54</sup> nodes | 2<sup>60</sup> points |
-| 11    | 2<sup>2</sup> ns   (4 ns)        |                                  | 2<sup>60</sup> nodes |                       |
+| level | node width             | stat point width       | total nodes | total stat points |
+|-------|------------------------|------------------------|-------------|-------------------|
+| 1     | 2^62 ns  (~146 years)  | 2^56 ns  (~2.28 years) | 2^0 nodes   | 2^6 points        |
+| 2     | 2^56 ns  (~2.28 years) | 2^50 ns  (~13.03 days) | 2^6 nodes   | 2^12 points       |
+| 3     | 2^50 ns  (~13.03 days) | 2^44 ns  (~4.88 hours) | 2^12 nodes  | 2^18 points       |
+| 4     | 2^44 ns  (~4.88 hours) | 2^38 ns  (~4.58 min)   | 2^18 nodes  | 2^24 points       |
+| 5     | 2^38 ns  (~4.58 min)   | 2^32 ns  (~4.29 s)     | 2^24 nodes  | 2^30 points       |
+| 6     | 2^32 ns  (~4.29 s)     | 2^26 ns  (~67.11 ms)   | 2^30 nodes  | 2^36 points       |
+| 7     | 2^26 ns  (~67.11 ms)   | 2^20 ns  (~1.05 ms)    | 2^36 nodes  | 2^42 points       |
+| 8     | 2^20 ns  (~1.05 ms)    | 2^14 ns  (~16.38 µs)   | 2^42 nodes  | 2^48 points       |
+| 9     | 2^14 ns  (~16.38 µs)   | 2^8 ns   (256 ns)      | 2^48 nodes  | 2^54 points       |
+| 10    | 2^8 ns   (256 ns)      | 2^2 ns   (4 ns)        | 2^54 nodes  | 2^60 points       |
+| 11    | 2^2 ns   (4 ns)        |                        | 2^60 nodes  |                   |
 
 The sampling rate of the data at different moments will determine how deep the
 tree will be during those slices of time. Regardless of the depth of the actual
