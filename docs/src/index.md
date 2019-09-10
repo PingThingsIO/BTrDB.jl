@@ -16,6 +16,7 @@ Pages = [
     "man/getting_started.md",
     "man/explained.md",
     "man/concepts.md",
+    "man/sample_usage.md",
 ]
 Depth = 2
 ```

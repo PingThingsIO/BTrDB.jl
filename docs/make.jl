@@ -20,6 +20,7 @@ makedocs(
             "Getting Started" => "man/getting_started.md",
             "BTrDB Explained" => "man/explained.md",
             "Concepts" => "man/concepts.md",
+            "Sample Usage" => "man/sample_usage.md",
         ],
         "API" => Any[
             "Types" => "lib/types.md",
